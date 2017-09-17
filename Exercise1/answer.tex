@@ -1,0 +1,418 @@
+\documentclass{article}
+
+\usepackage{algorithm,algpseudocode}
+\usepackage{a4wide,amsmath,amssymb,fancyhdr,graphicx,tabularx,xspace}
+
+%------------------------------------------------------------------------------
+\newcommand{\course}{Advanced Algorithms}
+\newcommand{\coursenumber}{2IMA10}
+\newcommand{\courseyear}{Fall 2017}
+%------------------------------------------------------------------------------
+\pagestyle{fancy}
+\chead{}
+\lhead{TU Eindhoven}
+\rhead{\course\ (\coursenumber) --- Homework Exercises, \courseyear}
+\cfoot{\thepage}
+\lfoot{}
+\rfoot{}
+%------------------------------------------------------------------------------
+
+%to include IPE/pdf correctly
+\expandafter\ifx\csname pdfoptionalwaysusepdfpagebox\endcsname\relax\else
+\pdfoptionalwaysusepdfpagebox5
+\fi
+
+
+\newcommand{\Reals}{{\Bbb R}}
+\newcommand{\Nats}{{\Bbb N}}
+\newcommand{\Ints}{{\Bbb Z}}
+
+\newcommand{\C}{\ensuremath{\mathcal{C}}}
+\newcommand{\E}{\ensuremath{\mathcal{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\G}{\ensuremath{\mathcal{G}}}
+\newcommand{\U}{\ensuremath{\mathcal{U}}}
+
+\newcommand{\graph}{\G}
+\newcommand{\tree}{\ensuremath{\mathcal{T}}}
+\newcommand{\node}{\nu}
+\newcommand{\lchild}{\mathrm{lc}}
+\newcommand{\rchild}{\mathrm{rc}}
+\newcommand{\size}{\mathit{size}}
+\newcommand{\leaf}{\mu}
+\newcommand{\mylist}{{\cal L}}
+\newcommand{\myroot}{\mathit{root}}
+\newcommand{\key}{\mathit{key}}
+\newcommand{\bd}{\partial}
+
+\newcommand{\myopt}{\mbox{{\sc opt}}\xspace}
+\newcommand{\lb}{\mbox{{\sc lb}}\xspace}
+\newcommand{\loadb}{{\sc Load Balancing}\xspace}
+\newcommand{\domset}{{\sc Dominating Set}\xspace}
+
+\newcommand{\vc}{{\sc Vertex Cover}\xspace}
+\newcommand{\wvc}{{\sc Weighted Vertex Cover}\xspace}
+\newcommand{\wsetc}{{\sc Weighted Set Cover}\xspace}
+\newcommand{\tsp}{{\sc TSP}\xspace}
+\newcommand{\mst}{{\sc MST}\xspace}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\ol}{\overline}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+\newcommand{\pr}[1]{\Pr[#1]}
+\DeclareMathOperator{\expectation}{E}
+\newcommand{\expt}[1]{\expectation[#1]}
+\newcommand{\events}[1]{\mbox{Events}(#1)}
+\newcommand{\rank}{\mathit{rank}}
+\newcommand{\result}{\mathit{result}}
+\newcommand{\piv}{\mathrm{piv}}
+\newcommand{\myexp}{\mathrm{exp}}
+\newcommand{\best}{\mathrm{best}}
+\newcommand{\worst}{\mathrm{worst}}
+\newcommand{\dest}{\mathit{dest}}
+\newcommand{\dist}{\mathit{distance}}
+\newcommand{\weight}{\mathit{weight}}
+\newcommand{\mylength}{\mathit{length}}
+\newcommand{\length}{\mathit{length}}
+\newcommand{\alg}{{\sc Alg}\xspace}
+\newcommand{\optsub}{\mathrm{opt}}
+
+\newcommand{\start}{\mathit{start}}
+\newcommand{\myend}{\mathit{end}}
+\newcommand{\free}{\mathit{free}}
+\newcommand{\true}{{\sc True}\xspace}
+\newcommand{\false}{{\sc False}\xspace}
+
+\newcommand{\etal}{{\emph{et al.}\xspace}}
+
+
+%------------------------------------------------------------------------------
+% Theorem-Like Environments
+%------------------------------------------------------------------------------
+\newtheorem{defin}{Definition}
+\newenvironment{mydefinition}{\begin{defin} \sl}{\end{defin}}
+\newtheorem{theo}[defin]{Theorem}
+\newenvironment{mytheorem}{\begin{theo} \sl}{\end{theo}}
+\newtheorem{lem}[defin]{Lemma}
+\newenvironment{mylemma}{\begin{lem} \sl}{\end{lem}}
+\newtheorem{propo}[defin]{Proposition}
+\newenvironment{myproposition}{\begin{propo} \sl}{\end{propo}}
+\newtheorem{coro}[defin]{Corollary}
+\newenvironment{corollary}{\begin{coro} \sl}{\end{coro}}
+
+\newenvironment{myproof}{\emph{Proof.}}{\hfill $\Box$ \medskip\\}
+
+%------------------------------------------------------------------------------
+\newcounter{rcounter}
+\newenvironment{rlist}%
+{\begin{list}{\setnr-\arabic{rcounter}}{\usecounter{rcounter}}}{\end{list}}
+\newcounter{rcountermem}
+%------------------------------------------------------------------------------
+
+\title{Advanced Algorithm Assignment I}
+\author{Frederik Oudman, Peter van der Perk, Weizhou Xing}
+\date{\today}
+
+\begin{document}
+	\maketitle
+	%------------------------------------------------------------------------------
+	\section*{Homework Exercises on Approximation Algorithms}
+	%------------------------------------------------------------------------------
+	The maximum number of points for all exercises is~30.
+	The grade for this homework set is: (number of scored points)/3.
+	
+	%------------------------------------------------------------------------------
+	\newcommand{\setnr}{A.I}
+	\subsection*{Exercise Set Approx I}
+	%------------------------------------------------------------------------------
+	\begin{rlist}
+		\item (2 point)
+		Suppose we have two algorithms for the same minimization problem, {\sc Alg1} and {\sc Alg2}.
+		{\sc Alg1} is a 2-approximation algorithm, and {\sc Alg2} is a 4-approximation algorithm.
+		Consider the following statements.
+		\begin{enumerate}
+			\item[(A)] There must be an input~$I$ such that
+			$\mbox{{\sc Alg2}}(I) \geq 2\cdot \mbox{{\sc Alg1}}(I)$.
+			\item[(B)] There cannot be an input $I$ such that
+			$\mbox{{\sc Alg1}}(I) > 2\cdot \mbox{{\sc Alg2}}(I)$.
+		\end{enumerate}
+		For both statements, indicate whether they are true or false.
+		Add a short explanation of your answer (a few lines per statement suffice).
+		
+		\textbf{Answer:}
+		\begin{enumerate}
+			\item[(A)]
+			\textbf{False}. If {\sc Alg1} is a 2-approximaion algorithm and {\sc Alg2} is a 4-approximation algorithm, then we have:
+			$$\mbox{{\sc Alg1}}(I) \leq 2\cdot \mbox{{\sc Opt}}(I)$$
+			$$\mbox{{\sc Alg2}}(I) \leq 4\cdot \mbox{{\sc Opt}}(I)$$
+			then:
+			$$2\cdot \mbox{{\sc Alg1}}(I) \leq 4\cdot \mbox{{\sc Opt}}(I)$$
+			However, this only means that $\mbox{{\sc Alg2}}(I) \geq 2\cdot \mbox{{\sc Alg1}}(I)$ \emph{can} be the case, this is not necessary.
+			\item[(B)]
+			\textbf{True}. We know from (A) that $\mbox{{\sc Alg2}}(I) \leq 4\cdot \mbox{{\sc Opt}}(I)$. In the meanwhile, the result of our algorithm must not be better than that of the optimal solution, which is $\mbox{{\sc Opt}}(I) \leq \mbox{{\sc Alg2}}(I)$. Thus, we have $2\cdot \mbox{{\sc Opt}}(I) \leq 2\cdot \mbox{{\sc Alg2}}(I)$.
+			From (A) we also have $\mbox{{\sc Alg1}}(I) \leq 2\cdot \mbox{{\sc Opt}}(I)$. Thus finally we can prove $\mbox{{\sc Alg1}}(I) \leq 2\cdot \mbox{{\sc Opt}}(I) \leq 2\cdot \mbox{{\sc Alg2}}(I)$.
+		\end{enumerate}
+		\item (2+2 points)
+		Consider a company that each day receives a number of jobs that need to be scheduled (for that day) on one of their machines. The company uses the \emph{Greedy-Scheduling} algorithm to do the scheduling. Thus, each day the company runs \emph{Greedy-Scheduling} on the set of jobs that must be executed on that day. The following information is known about the company and the jobs: the company has 5 machines, and the processing times $t_j$ of the jobs are always between 1 and 25, that is, $1\leq t_j\leq 25$ for all $j$ (the processing times need not be integers). Furthermore, the total processing time of all the jobs, $\sum_{j=1}^n t_j$, is always at least 500.
+		\begin{enumerate}
+			\item[(i)]
+			We know from Theorem~1.5 in the Course Notes that \emph{Greedy-Scheduling} is a $(9/5)$-approximation algorithm. Under the given conditions a stronger result is possible: prove that \emph{Greedy-Scheduling} is a $\rho$-approximation  for some specific constant~$\rho<9/5$. Try to make $\rho$ as small as possible. 
+			\item[(ii)]
+			Give an example of a set of jobs satisfying the condition stated above such that the makespan produced by \emph{Greedy-Scheduling} on this input is $\rho'$ times the optimal makespan, and argue that your example indeed gives an approximation ratio~$\rho'$. Try to make $\rho'$ as large as possible.
+		\end{enumerate}
+		
+		Note: ideally, the value for $\rho'$ that you prove in~(ii) is equal to the value for~$\rho$ that you prove in~(i). If this is the case, your analysis is \emph{tight}---it cannot be improved---and the value is \emph{the} approximation ratio of the algorithm.
+		
+		\textbf{Answer:}
+		\begin{enumerate}
+			\item[(i)]
+			Lemma 1.3 in the course notes states the following:
+			$$\mbox{\sc Opt} \geq \max \left(\frac{1}{m}\sum_{j=1}^n t_j, \max_{1 \leq j \leq n} t_j\right)$$
+			Since the total processing time of all the jobs is bigger than the maximum processing type of any single job, and we have a fixed number of machines, we can improve this:
+			$$\mbox{\sc Opt} \geq \frac{1}{5}\sum_{j=1}^n t_j \geq \frac{500}{5} = 100$$
+			Since the greedy algorithm per definition assigns new jobs to the machine with the minimum load, the difference between the machine with the biggest makespan $m_b$ and the machine with the smallest makespan $m_s$ is at most $25$. The optimal makespan lies in between and is by definition the average makespan $m_a$. In the worst case scenario, we have $m_b - m_s = 25$ and $m_a$ as low as possible. To get to the situation in which $m_a$ is as low as possible, we need one machine with a makespan of $m_b$ and all other machines having a makespan of $m_s$. Therefore:
+			$$\rho = \frac{m_b}{m_a} \leq \frac{100 + 25 \cdot \frac{5-1}{5}}{100} = \frac{120}{100} = \frac{6}{5}$$
+			\item[(ii)]
+			Consider the following set of jobs: $5$ jobs with a processing time of $t_j = 20$ and $16$ jobs with a processing time of $t_j = 25$. The optimal solution gives one machine $5$ jobs with a processing time of $t_j = 20$ and the other machines $4$ jobs with a processing time of $t_j = 25$. The workloads are then perfectly balanced, each machine has a total processing time of $100$. The greedy algorithm however, first gives all machines one job with a processing time of $20$ and divides the remaining jobs over all machines, thus creating one workload with a total processing time of $120$ and four workloads with a total processing time of $95$, such that $\rho'=\frac{120}{100}=\frac{6}{5}$. This is the absolute worst case scenario and corresponds with the $\rho$ calculated. Therefore, the calculated $\rho$ indicates a tight bound.
+		\end{enumerate}
+		\item (2+2 point) \textit{Peter van der Perk}
+		A shipping company has to decide how to distribute
+		a load consisting of a $n$ containers over its ships. For $1\leq i\leq n$, let
+		$w_i$ denote the weight of container~$i$. The ships are identical, and each
+		ship can carry containers with a maximum total weight $W$.
+		(Thus if $C(j)$ denotes the set of containers assigned to ship~$j$, then
+		$\sum_{i\in C(j)} w_i \leq W$.) The goal is to assign
+		containers to ships in such a way that a minimum number of ships is used.
+		\begin{enumerate}
+			\item[(i)] Give a 2-approximation algorithm for this problem. In this part of the question
+			you do not have to prove the approximation ratio, you only have to describe the algorithm
+			clearly. (Do not make the desciption longer than necessary.)
+			\emph{Hint:} There is a very simple greedy algorithm that gives a 2-approximation.
+			\item[(ii)] Prove that your algorithm indeed gives a 2-approximation. 
+		\end{enumerate}
+		
+	\end{rlist}
+	
+	%------------------------------------------------------------------------------
+	\renewcommand{\setnr}{A.II}
+	\subsection*{Exercise Set Approx II}
+	%------------------------------------------------------------------------------
+	\begin{rlist}
+		\item (2 point)
+		Let $G=(V,E)$ be an (undirected) graph.
+		A \emph{vertex cover} of $G$  is a subset $C\subset V$ such that
+		for every edge $(u,v)\in E$ we have $u\in C$ or $v\in C$ (or both).
+		An \emph{independent set} of $G$ is a subset $I\subset V$ such that
+		no two vertices in $I$ are connected by an edge in~$E$.
+		
+		Now suppose we want to compute a maximum-size independent set on $G$,
+		and suppose we have a 2-approximation algorithm $\emph{ApproxMinVertexCover}$ for finding a minimum-size vertex cover. It is easily verified that $C$ is a vertex cover of $G$ 
+		if and only if $V\setminus C$ is an independent set of $G$. 
+		Hence, the following algorithm computes a valid independent set.
+		%--------------------------------------------------------------------------------------------
+		\begin{algorithm}
+			\vspace*{2mm}
+			\begin{quotation}
+				\noindent
+				\emph{ApproxMaxIndependentSet}$(G)$ \\[-5mm]
+				\begin{algorithmic}[1]
+					\State $C \gets$ \emph{ApproxMinVertexCover}$(G)$  \Comment{$G=(V,E)$ is an undirected graph}
+					\State \Return $V\setminus C$
+				\end{algorithmic}
+			\end{quotation}
+		\end{algorithm}
+		%--------------------------------------------------------------------------------------------
+		\\
+		Prove that \emph{ApproxMaxIndependentSet} is a
+		(1/2)-approximation algorithm for computing a maximum independent set, 
+		or give an example showing that this need not be the case.
+        %--------------%
+        % Xing Weizhou %
+        %--------------%
+		\item (1+2+2 points)
+		Let $d\geq 2$ be an integer, and let $V$ be a set of elements called \emph{vertices}.
+		We call a subset $e\subset V$ of size $d$ a \emph{$d$-edge} on $V$.
+		A \emph{$d$-hypergraph} is a pair $G=(V,E)$ where $E$ is a set of $d$-edges on $V$.
+		Note that a 2-hypergraph is just a normal (undirected) graph.
+		
+		A \emph{triple vertex cover} of a $5$-hypergraph $G=(V,E)$ is a subset $C\subset V$ such that
+		for every $5$-edge $e\in E$ there are (at least) three vertices $u,v,w\in C$ such that $\{u,v,w\}\subset e$.
+		We want to compute for a given $5$-hypergraph $G=(V,E)$ a minimum-size
+		triple vertex cover.
+		\begin{enumerate}
+			\item[(i)] Formulate the problem as a 0/1 linear program, and briefly explain
+			your formulation.
+			\item[(ii)] Give a polynomial-time approximation algorithm for this problem, based on the
+			technique of LP rounding. Prove that your algorithm return a valid
+			solution (that is, a triple vertex cover) and prove a bound on its approximation ratio.
+			\item[(iii)] Recall that the integrality gap for an LP is the 
+			worst-case ratio between the value
+			of an optimal non-integral solution and the value of an integral solution.
+			Show that the integrality gap for your LP is at least~$c$, for some
+			constant $c>1$. Try to make $c$ as large as possible.
+		\end{enumerate}
+		\textbf{Answer:}
+        \begin{enumerate}
+            \item[(i)] 
+            \begin{eqnarray*}
+                && \textrm{Minimize} \quad \sum_{i=1}^{n}weight(v_i) \cdot x_i \\
+                &&\textrm{Subject to:}\\
+                %\begin{gathered}
+                && x_i+x_j+x_k+x_l+x_m \geq 3 \quad \textrm{for all 5-edges} \; (v_i, v_j, v_k, v_l, v_m) \in  E\\
+                && x_i \in \{0, 1\} \quad \textrm{for} \quad 1\leq i \leq n
+                %\end{gathered}
+            \end{eqnarray*}
+            
+            Variable $x_i$ represent whether its corresponding $v_i$ is in the \textit{triple vertex cover}. 
+            We minimize the weight of the \textit{triple vertex cover}, under the restriction that the sum 
+            of x variables of every 5-edge of this 5-hypergraph is larger or equal to 3, which means that 
+            at least three of the 5 vertices are in the \textit{triple vertex cover}. 
+            \item[(ii)] \textit{Algorithm Explanation:} The most important part of the algorithm is our choice of the threshold of $\frac{1}{3}$. First, 
+            we need to make sure thatat least 3 of the 5 vertices are included in the triple vertex cover, that is the sum of corresponding $x$ value to 
+            each vertex in the 5-edges must be greater that 3. We need to find the smallest value of the third greatest x in any edges. Consider the 
+            worst case: the top 2 greatest $x$s are both $1$. Thus, the remaining 3 $x$s must sum up greater than 1. In this way, we know that threshold 
+            of x should be $\frac{1}{3}$.\\
+            \textit{Proof of approximation bound:} Let $W$ denote the total weight of the hypergraph returned by the solution of the linear programme, 
+            $C$ is the vertex cover from the solution. From Lemma 3.3 we have $\textrm{\sc Opt} \geq W$. Also, we choose the threshold of x to be included in 
+            the cover is $\frac{1}{3}$.
+            \begin{eqnarray*}
+            &&\sum_{v_i\in C} weight(v_i) \leq \sum_{v_i\in C} weight(v_i) \cdot 3x_i \leq 3 \sum_{v_i\in C} weight(v_i) \cdot x_i \\
+            && \leq 3\sum_{i=1}^{n} weight(v_i) \cdot x_i = 3W \leq 3 \cdot \textrm{\sc Opt}
+            \end{eqnarray*}
+            \begin{algorithm}
+                \vspace*{2mm}
+                \begin{quotation}
+                    \noindent
+                    \emph{ApproxWeightedTripleVertexCover}$(V,E)$
+                    \begin{algorithmic}[1]
+                        \State Solve the linear program described as following:
+                        %\begin{equation*}
+                        \begin{eqnarray*}
+                            && \textrm{Minimize} \quad \sum_{i=1}^{n}weight(v_i) \cdot x_i \\
+                            &&\textrm{Subject to:}\\
+                            %\begin{gathered}
+                            && x_i+x_j+x_k+x_l+x_m \geq 3 \quad \textrm{for all 5-edges} \; (v_i, v_j, v_k, v_l, v_m) \in  E\\
+                            && 0 \leq x_i \leq 1 \quad \textrm{for} \quad 1\leq i \leq n
+                            %\end{gathered}
+                        \end{eqnarray*}
+                        %\end{equation*}
+                        \State $C \gets \{v_i \in V: x_i \geq \frac{1}{3} \}$
+                        \State \Return $C$
+                    \end{algorithmic}
+                \end{quotation}
+                \caption{Find vertex cover through LP-Rounding}
+            \end{algorithm}
+            \item[(iii)] The integrality gap for LP means for any legal input $I$, the maximum value of the ratio of the optimal 1/0 programme
+            solution to the optimal linear programme solution. That is:
+            $$Max_{\forall{I}} \frac{\textrm{\sc Opt}_{Int}(I)}{\textrm{\sc Opt}_{LP}(I)}$$
+            I got some inspiration from the example problem on the course. Consider a fully connected 5-hypergraph. It has $C_{n}^{5}$ edges in total.
+            For a fully-connected hypergraph, the linear programme optimal solution would be assigning $\frac{3}{5}$ to every $x$. The output is 
+            $\frac{3n}{5}$. The solution of the integral or 0/1 programme is $n-2$, which avoids the circumstance on which all the vertices
+            that is not in the triple cover together form a 5-edge because only 2 vertices are not in the triple cover. For a complete 5-hypergraph,
+            the integrality gap is
+            $$IG=\frac{n-2}{\frac{3n}{5}} = \frac{5}{3} (1-\frac{2}{n})$$
+            %The minimum element in V for a 5-hypergraph is 5, which means it only has one edge. The minimum $IG$ would be 1.
+        \end{enumerate}
+		\item ($1+2$ points)
+		Let $\graph=(V,E)$ be an undirected graph. For a node $u\in V$, define $N(u) := \{ v \in V: (u,v) \in E\}$ to be the set of neighbors of~$u$, and define $N^*(u) := N(u) \cup \{ u\}$. A \emph{dominating set} of $\graph$ is a subset $D\subseteq V$ such that for each node $u\in V$ we have $N^*(u) \cap D \neq \emptyset$. In other words, each node~$u$ is in~$D$ or it has at least one neighbor in~$D$ (or both). The \domset problem is to compute a dominating set with a minimum number of vertices.
+		\begin{enumerate}
+			\item[(i)]
+			Formulate the \domset problem as a 0/1 linear program, and briefly explain your formulation.
+			\item[(ii)]
+			Assume that the maximum degree of $\graph$ is four, that is, that      $|N^*(u)|\leq 5$ for all $u\in V$. Give an approximation algorithm for \domset for this case, based on the technique of LP rounding. Argue that your algorithm returns a valid solution and prove a bound on its approximation ratio.
+		\end{enumerate}
+		
+		\textbf{Answer:}
+		\begin{enumerate}
+			\item[(i)]
+			bladiebla
+			\item[(ii)]
+			bladiebla
+		\end{enumerate}
+	\end{rlist}
+	
+	%------------------------------------------------------------------------------
+	\renewcommand{\setnr}{A.III}
+	\subsection*{Exercise Set Approx III}
+	%------------------------------------------------------------------------------
+	\begin{rlist}
+		\item ($1+2$ points)
+		Consider the \loadb problem on two machines.
+		Thus we want to distribute a set of $n$ jobs with
+		processing times $t_1,\ldots,t_n$ over two machines such that the makespan (the maximum of the
+		processing times of the two machines) is minimized.
+		In this exercise we will develop a PTAS for this problem.
+		
+		Let $T=\sum_{j=1}^n t_j$ be the total size of all jobs.
+		We call a job \emph{large} (for a given $\eps>0$) if its processing time is at
+		least $\eps \cdot T$, and we call it \emph{small} otherwise.
+		\begin{enumerate}
+			\item[(i)] How many large jobs are there at most, and what is the number of ways in which the
+			large jobs can be distributed over the two machines?
+			\item[(ii)] Give a PTAS for the \loadb problem for two machines. Prove that your algorithm
+			achieves the required approximation ratio and analyze its running time.
+		\end{enumerate}
+		\item ($1 + 2 + 1$ points)
+		Let $\graph=(V,E)$ be a connected graph, where every vertex $v\in V$ 
+		has a positive weight denoted by $\weight(v)$. We want to compute a 
+		minimum-weight vertex cover for $\graph$.
+		Suppose we have an algorithm \emph{IntegerVC}$(\graph)$ that solves the problem optimally when all the weights are integers, in time $O( |V|\cdot |E|\cdot W)$ where $W = \sum_{v\in V} \weight(v)$.
+		(NB Such an algorithm actually does not exist, but for this exercise you can assume it does exist.)
+		We want to develop a PTAS for this problem on connected graphs, for the case where the weights are arbitrary numbers such that $0.5 \leq \weight(v) \leq 2$ for all $v\in V$.
+		Consider the following algorithm.
+		%--------------------------------------------------------------------------------------------
+		\begin{algorithm}
+			\vspace*{2mm}
+			\begin{quotation}
+				\noindent
+				\emph{PTAS-VC}$(\graph)$ \\
+				$\rhd$ $\graph=(V,E)$ is a connected graph \\[-5mm]
+				\begin{algorithmic}[1]
+					\State $\Delta \gets \ldots$
+					\State For each vertex $v\in V$, set $\weight^*(v) \gets \ldots$
+					\State Let $\graph^*$ be the same graph as $\graph$, but with the weights $\weight(v)$
+					replaced by $\weight^*(v)$ for all $v\in V$.
+					\State $C  \gets$ \emph{IntegerVC}$(\graph^*)$.
+					\State {\bf return $C$}
+				\end{algorithmic}
+			\end{quotation}
+		\end{algorithm}
+		%--------------------------------------------------------------------------------------------
+		\begin{enumerate}
+			\item[(i)] Give a suitable value for $\Delta$ in Step~1 and for $\weight^*(v)$
+			in Step~2 so that the resulting algorithm is a PTAS, and explain the intuition behind your choice of~$\Delta$. (Note: Here you don't have to give a formal proof
+			that the algorithm is a PTAS.)
+			\item[(ii)] Define $C_{\optsub}$ to be an optimal (that is, minimum-weight) vertex cover for the given graph~$\graph$.
+			For a subset $U\subseteq V$, let $\weight(U):=\sum_{v\in U}\weight(v)$
+			be the total weight of the vertices in $U$, and let
+			$\weight^*(U):=\sum_{v\in U}\weight^*(v)$ be the total modified weight.
+			Prove that $\weight(C) \leq (1+\eps)\cdot \weight(C_{\optsub})$ for your choice of~$\Delta$.
+			\item[(iii)] Analyze the running time of the algorithm for your choice of~$\Delta$.
+		\end{enumerate}
+		
+		\item (2+1 points)
+		Let $G=(V,E)$ be a graph. An \emph{independent set} of $G$ is a subset $W\subseteq V$
+		such that no two nodes in $W$ are adjacent. In other words, for any two nodes $v,w\in W$ we
+		have $(v,w)\not\in E$. A \emph{maximum independent set} is an independent set of maximum size.
+		{\sc Maximum Independent Set}, the problem of finding a maximum independent set of a
+		given graph~$G$, is NP-hard, so there is no polynomial-time algorithm that solves the
+		problem optimally unless P=NP.
+		\begin{enumerate}
+			\item[(i)]
+			Prove that the NP-hardness of {\sc Maximum Independent Set} implies that there is 
+			no FPTAS for {\sc Maximum Independent Set} unless P=NP.
+			\\[2mm]
+			\emph{Hint:} Assume {\sc Alg}$(G,\eps)$ is an FPTAS that computes a $(1-\eps)$-approximation
+			for {\sc Maximum Independent Set} on a graph~$G$. Now give an algorithm that solves
+			{\sc Maximum Independent Set} exactly by picking a suitable $\eps$ and using
+			{\sc Alg}$(G,\eps)$ as a subroutine. Argue that your choice of $\eps$ leads to
+			an exact solution and argue that the resulting algorithm runs in polynomial time
+			to derive a contradiction to the existence of an FPTAS.
+			\item[(ii)]
+			Does your proof also imply that there is no PTAS for {\sc Maximum Independent Set} unless P=NP?
+            Explain your answer.
+		\end{enumerate}
+	\end{rlist}
+\end{document} 
