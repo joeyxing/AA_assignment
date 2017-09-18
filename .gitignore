@@ -1,3 +1,8 @@
 *.pdf
 *.pptx
+*.aux
+*.synctex.gz
+*.bbl
+*.log
+*.blg
 
