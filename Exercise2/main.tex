@@ -180,8 +180,18 @@
             \item[(IV)]
             The number of \ios is $\Theta(\log_2 n)$.
         \end{enumerate}
-        Which of these four statements is true? Briefly explain your answer. \emph{Note:} You only have to argue that the statement you choose is true, not that the others are false. (That follows automatically.)
-        
+        Which of these four statements is true? Briefly explain your answer. \emph{Note:} You only have to argue that the statement you choose is true, not that the others are false. (That follows automatically.)\\
+        \textbf{Answer:}
+        The second statement is true: The number of \ios is $\Theta(\log_2 (n/B))$.\\
+        This can be written as $\Theta(\log_2n-\log_2B)$. This performance can be interpreted as that in the first few binary searchings, we need to perform \ios every time because numbers are far from each other (yellow blocks in Figure \ref{fig:bs}. However, after a few times of searches, all the number that we need to compare can be reached within one single \io block so no more \ios is needed (red block in the Figure \ref{fig:bs}).
+        %\begin{tikzpicture}
+        %\draw (0,-2) -- (4,-2);
+        %\end{tikzpicture}
+        \begin{figure}[h]
+            \includegraphics[width=\linewidth]{figs/I_2.jpg}
+            \caption{Binary search, Yellow shows block, red shows last block}
+            \label{fig:bs}
+        \end{figure}
         
         \item ($2$ points)
         Consider the algorithm from the Course Notes that computes the average value in an $m\times m$ array~$A$ column by column, for the case where $A$ is stored in row-major order. In the Course Notes it was stated (on page~43) that the algorithm performs $n$~\ios, where $n := m^2$ is the total size of the array. The reason is that whenever we need a new entry from the array, we have already evicted the block containing that entry. This is true when the Least-Recently-Used replacement policy is used and when $m > M/B$, but it is not immediately clear what happens when some other replacement policy is used.
