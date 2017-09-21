@@ -3,6 +3,9 @@
 \usepackage{algorithm,algpseudocode}
 \usepackage{a4wide,amsmath,amssymb,fancyhdr,graphicx,tabularx,xspace}
 
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning}
+
 %------------------------------------------------------------------------------
 \newcommand{\course}{Advanced Algorithms}
 \newcommand{\coursenumber}{2IMA10}
@@ -134,37 +137,54 @@
     \begin{rlist}
         
         \item ($1$ point)
-        Suppose you have three search algorithms on a very large data set consisting of $n=10^9$ elements: 
-        one algorithm performs $\lceil \log_2 (n/B)\rceil$ \ios, one performs $\lceil \log_B n \rceil$ \ios,
-        and one performs 20~\ios.
-        Which one would you use in practice? Explain your answer by considering the number of \ios 
-        of the three algorithms for a realistic value of~$B$.
-        
+        Suppose you have three search algorithms on a very large data set consisting of $n=10^9$ elements: one algorithm performs $\lceil \log_2 (n/B)\rceil$ \ios, one performs $\lceil \log_B n \rceil$ \ios, and one performs 20~\ios. Which one would you use in practice? Explain your answer by considering the number of \ios of the three algorithms for a realistic value of~$B$.
+        \textbf{Answer:}
+        There are three circumstances where one of these algorithms beats the other two in performance. We need to compare the performance of every two algorithm to find the boundaries of $B$.
+        \begin{enumerate}
+            \item[(i)]
+            \begin{align*}
+            &\lceil \log_2 (n/B)\rceil < 20 \\
+            &\Longrightarrow \frac{n}{B} < 2^{20} \\
+            &\Longrightarrow B_1 > \frac{n}{2^{20}} = \frac{10^9}{2^{20}} = \frac{10^9}{1024^2} \approx \frac{10^9}{10^6} = 10^3
+            \end{align*}
+            \item[(ii)]
+            \begin{align*}
+            &\lceil \log_2 (n/B)\rceil < \lceil \log_B n \rceil\\
+            &\Longrightarrow \frac{\log_{10}(n/B)}{\log_{10}2} < \frac{\log_{10}n}{\log_{10}B} \\
+            &\Longrightarrow \frac{9-\log_{10}B}{\log_{10}2} < \frac{9}{\log_{10}B} \\
+            &\textrm{Let $x$ denote } \log_{10}B\\
+            &\Longrightarrow \frac{9-x}{\log_{10}2} < \frac{9}{x} \\
+            & x > \frac{13}{2} \textrm{ or } 0 < x <\frac{1}{2}\\
+            & B_2 > 10^{6.5} \textrm{  or  } B_2 < \sqrt{10}
+            \end{align*}
+            \item[(iii)]
+            \begin{align*}
+            &\lceil \log_B n \rceil < 20\\
+            &\Longrightarrow B > n^{\frac{1}{20}}\\
+            &\Longrightarrow B_3 > 10^{9 \cdot \frac{1}{20}} \approx 10^{1/2} \approx 4\\
+            \end{align*}
+        \end{enumerate}
+        For a realistic \io, the size of block should lie in range $10^3$ to $10^4$. Thus, the algorithm which performs $\lceil \log_B n \rceil$ \ios is the most optimal.
         \item ($2$ point)
         Let $A[0..n-1]$ be a sorted array of $n$ numbers, stored in blocks in the natural
         way: $A[0..B-1]$ is the first block, $A[B..2B-1]$ is the second block, and so on.
         Consider the following four statements about the number of \ios when we
         do a binary search on~$A$.
         \begin{enumerate}
-            \item[(I)] The number of \ios is $\Theta(n/B)$.
-            \item[(II)] The number of \ios is $\Theta(\log_2 (n/B))$.
-            \item[(III)] The number of \ios is $\Theta(\log_B(n))$.
-            \item[(IV)] The number of \ios is $\Theta(\log_2 n)$.
+            \item[(I)]
+            The number of \ios is $\Theta(n/B)$.
+            \item[(II)]
+            The number of \ios is $\Theta(\log_2 (n/B))$.
+            \item[(III)]
+            The number of \ios is $\Theta(\log_B(n))$.
+            \item[(IV)]
+            The number of \ios is $\Theta(\log_2 n)$.
         \end{enumerate}
-        Which of these four statements is true? Briefly explain your answer. 
-        \emph{Note:} You only have to argue that the statement you choose is true, 
-        not that the others are false. (That follows automatically.)
+        Which of these four statements is true? Briefly explain your answer. \emph{Note:} You only have to argue that the statement you choose is true, not that the others are false. (That follows automatically.)
         
         
         \item ($2$ points)
-        Consider the algorithm from the Course Notes that computes the average value in an $m\times m$ array~$A$
-        column by column, for the case where $A$ is stored in row-major order.
-        In the Course Notes it was stated (on page~43)
-        that the algorithm performs $n$~\ios, where $n := m^2$ is the total size of the array.
-        The reason is that whenever we need a new entry from
-        the array, we have already evicted the block containing that entry. This
-        is true when the Least-Recently-Used replacement policy is used and when $m > M/B$,
-        but it is not immediately clear what happens when some other replacement policy is used.
+        Consider the algorithm from the Course Notes that computes the average value in an $m\times m$ array~$A$ column by column, for the case where $A$ is stored in row-major order. In the Course Notes it was stated (on page~43) that the algorithm performs $n$~\ios, where $n := m^2$ is the total size of the array. The reason is that whenever we need a new entry from the array, we have already evicted the block containing that entry. This is true when the Least-Recently-Used replacement policy is used and when $m > M/B$, but it is not immediately clear what happens when some other replacement policy is used.
         
         Prove that when $m>2M/B$, then \emph{any} replacement policy will perform $\Omega(n)$~\ios.
         
@@ -202,12 +222,49 @@
         \textbf{Answer:}
         \begin{enumerate}
             \item[(i)]
-            The algorithm contains two for loops, one out loop, lines 2-6, and one inner loop, lines 
-            Let's start with the most internal for-loop, lines 3-5 of the algorithm. 
+            The algorithm contains two for loops, one outer loop, lines 2-6 of the algorithm, and one inner loop, lines 3-5 of the algorithm. All data of $X$ is read and compared linear, therefore $X$ has a $O(\frac{n}{B})$ \io complexity.
+            
+            Data from $Y$ is however read in the inner loop. Since $n \gg M$, this data has to be read for every cycle of the outer loop. The complexity of $Y$ is therefore $n \cdot O(\frac{n}{B}) = O(\frac{n^2}{B})$ \ios, which gives a total \io complexity of $O(\frac{n^2}{B})$ \ios.
             \item[(ii)]
-            bladiebla
+            I designed the following algorithm:
+            
+            \emph{CacheAwareFindMin}$(X,Y)$
+            \begin{algorithmic}[1]
+                \State $t \gets B \cdot \lfloor M / B \rfloor$ - B
+                \State $z \gets +\infty$
+                \For{$i\gets 0$ \textbf{to} $n/t$}
+                \State $X^* \gets X[i \cdot t : \min ((i+1) \cdot t - 1, n)]$
+                \For{$j\gets 0$ \textbf{to} $n/t$}
+                \State $Y^* \gets Y[j]$
+                \State $z \gets \min (z, FindMin(X^*, Y^*))$
+                \EndFor
+                \EndFor
+                \State \Return $z$
+            \end{algorithmic}
+            
+            Instead of loading array entries one by one, we divide $X$ in bigger blocks that we load one by one in the internal memory. Lines 2-10 should be self-explaining. In order to minimize the \io complexity, we have to maximize $t = |X^*|$, so we get: $t = M$. To order with blocks sticking out, we divide by $B$, floor the result and then multiply by $B$ again. This way, we can take exact blocks from the external memory that will always fit into the internal memory. Since we need to reserve for one block of $Y$, we subtract $B$. 
+            
+            Again, the algorithm contains two for loops. All data of $X$ is linear read in the outer loop exactly one time, so we have again an \io complexity of $O(\frac{n}{B})$ \ios for $X$. The inner loop has again the same problem as before: since $n \gg M$, $Y$ has to be read once time for every cycle of the outer loop. This gives an \io complexity of $\frac{n}{t} \cdot O(\frac{n}{B}) = \frac{n}{B \cdot \lfloor M / B \rfloor - B} \cdot O(\frac{n}{B}) < \frac{n}{M} \cdot O(\frac{n}{B}) = O(\frac{n^2}{MB})$ \ios.
             \item[(iii)]
-            bladiebla
+            I designed the following algorithm:
+            
+            \emph{CacheObliviousFindMin}$(X, i_1, i_2, Y)$
+            \begin{algorithmic}[1]
+                \If{$i_1 = i_2$}
+                \State $z \gets +\infty$
+                \For{$j\gets 0$ \textbf{to} $n-1$}
+                \State $z \gets \min (z, f(X[i_1],Y[j]) )$
+                \EndFor
+                \Else
+                \State $i_{mid} \gets \lfloor (i_1 + i_2) / 2 \rfloor$
+                \State $z_1 \gets CacheObliviousFindMin(X, i_1, i_{mid}, Y)$
+                \State $z_2 \gets CacheObliviousFindMin(X, i_{mid} + 1, i_2, Y)$
+                \State $z \gets \min (z_1, z_2)$
+                \EndIf
+                \State \Return $z$
+            \end{algorithmic}
+            
+            One way to think about \emph{CacheObliviousFindMin} is that it recursively partitions $X$ into sub-arrays until the sub-arrays are such that they fit into the memory next to one block of $Y$, in other words, the size of a sub-array is smaller than or equal to $M-B$. In such a situation, we have an \io complexity of $O(\frac{n}{B})$ because of array $Y$. The question now is: how many of these situations are recursively created? In the best case scenario, we have $\frac{n}{M-B}$ of these situations. In the worst case, we have no more than $2 \cdot \frac{n}{M-B}$ of these situations. So our total \io complexity becomes $2 \cdot \frac{n}{M-B} \cdot O(\frac{n}{B}) < 2 \cdot \frac{n}{M} \cdot O(\frac{n}{B}) = O(\frac{2 \cdot n^2}{MB}) = O(\frac{n^2}{MB})$ \ios.
         \end{enumerate}
         
     \end{rlist}
