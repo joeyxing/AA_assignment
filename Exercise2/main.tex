@@ -3,9 +3,6 @@
 \usepackage{algorithm,algpseudocode}
 \usepackage{a4wide,amsmath,amssymb,fancyhdr,graphicx,tabularx,xspace}
 
-\usepackage{tikz}
-\usetikzlibrary{automata, positioning}
-
 %------------------------------------------------------------------------------
 \newcommand{\course}{Advanced Algorithms}
 \newcommand{\coursenumber}{2IMA10}
@@ -138,7 +135,9 @@
         
         \item ($1$ point)
         Suppose you have three search algorithms on a very large data set consisting of $n=10^9$ elements: one algorithm performs $\lceil \log_2 (n/B)\rceil$ \ios, one performs $\lceil \log_B n \rceil$ \ios, and one performs 20~\ios. Which one would you use in practice? Explain your answer by considering the number of \ios of the three algorithms for a realistic value of~$B$.
+        
         \textbf{Answer:}
+        
         There are three circumstances where one of these algorithms beats the other two in performance. We need to compare the performance of every two algorithm to find the boundaries of $B$.
         \begin{enumerate}
             \item[(i)]
@@ -154,8 +153,10 @@
             &\Longrightarrow \frac{9-\log_{10}B}{\log_{10}2} < \frac{9}{\log_{10}B} \\
             &\textrm{Let $x$ denote } \log_{10}B\\
             &\Longrightarrow \frac{9-x}{\log_{10}2} < \frac{9}{x} \\
-            & x > \frac{13}{2} \textrm{ or } 0 < x <\frac{1}{2}\\
-            & B_2 > 10^{6.5} \textrm{  or  } B_2 < \sqrt{10}
+            &\Longrightarrow 9x-x^2 < 9 \cdot \log_{10}2\\
+            &\textrm{Applying abc-formula:}\\
+            & x > 8.7 \vee x < 0.3\\
+            & B_2 > 10^{8.7} \textrm{  or  } B_2 < 10^{0.3}
             \end{align*}
             \item[(iii)]
             \begin{align*}
@@ -166,10 +167,7 @@
         \end{enumerate}
         For a realistic \io, the size of block should lie in range $10^3$ to $10^4$. Thus, the algorithm which performs $\lceil \log_B n \rceil$ \ios is the most optimal.
         \item ($2$ point)
-        Let $A[0..n-1]$ be a sorted array of $n$ numbers, stored in blocks in the natural
-        way: $A[0..B-1]$ is the first block, $A[B..2B-1]$ is the second block, and so on.
-        Consider the following four statements about the number of \ios when we
-        do a binary search on~$A$.
+        Let $A[0..n-1]$ be a sorted array of $n$ numbers, stored in blocks in the natural way: $A[0..B-1]$ is the first block, $A[B..2B-1]$ is the second block, and so on. Consider the following four statements about the number of \ios when we do a binary search on~$A$.
         \begin{enumerate}
             \item[(I)]
             The number of \ios is $\Theta(n/B)$.
@@ -180,10 +178,11 @@
             \item[(IV)]
             The number of \ios is $\Theta(\log_2 n)$.
         \end{enumerate}
-        Which of these four statements is true? Briefly explain your answer. \emph{Note:} You only have to argue that the statement you choose is true, not that the others are false. (That follows automatically.)\\
+        Which of these four statements is true? Briefly explain your answer. \emph{Note:} You only have to argue that the statement you choose is true, not that the others are false. (That follows automatically.)
+        
         \textbf{Answer:}
         The second statement is true: The number of \ios is $\Theta(\log_2 (n/B))$.\\
-        This can be written as $\Theta(\log_2n-\log_2B)$. This performance can be interpreted as that in the first few binary searchings, we need to perform \ios every time because numbers are far from each other (yellow blocks in Figure \ref{fig:bs}. However, after a few times of searches, all the number that we need to compare can be reached within one single \io block so no more \ios is needed (red block in the Figure \ref{fig:bs}).
+        This can be written as $\Theta(\log_2n-\log_2B)$. This performance can be interpreted as that in the first few binary searchings, we need to perform \ios every time because numbers are far from each other (yellow blocks in Figure \ref{fig:bs}. However, after a few times of searches, all the number that we need to compare can be reached within one single \io block so no more \ios is needed (red block in Figure \ref{fig:bs}).
         %\begin{tikzpicture}
         %\draw (0,-2) -- (4,-2);
         %\end{tikzpicture}
@@ -197,6 +196,25 @@
         Consider the algorithm from the Course Notes that computes the average value in an $m\times m$ array~$A$ column by column, for the case where $A$ is stored in row-major order. In the Course Notes it was stated (on page~43) that the algorithm performs $n$~\ios, where $n := m^2$ is the total size of the array. The reason is that whenever we need a new entry from the array, we have already evicted the block containing that entry. This is true when the Least-Recently-Used replacement policy is used and when $m > M/B$, but it is not immediately clear what happens when some other replacement policy is used.
         
         Prove that when $m>2M/B$, then \emph{any} replacement policy will perform $\Omega(n)$~\ios.
+        
+        \textbf{Answer1:}
+        To proof that \emph{any} replacement policy will perform $\Omega(n)$~\ios. We have to proof that the optimal policy performs $\Omega(n)$~\ios. The MIN (Long Forward Distance) is a optimal replacement policy.
+        
+        Computing the average value in an $m\times m$ array~$A$ column by column in array which is stored in row-major order will yield a block for each row in the column. When $m>M/B$ not all blocks of one column fit into the memory, so for some blocks we have to perform one \io per entry. The MIN pattern would fill up the memory $M$ with the first $M/B-1$ entries of a column and swap all other entries of the column one by one. This gives $(M/B-1)(m/B)+(m-(M/B-1))m$. Since $m>2M/B \implies M/B < \frac{1}{2}m$, we get $(M/B-1)(m/B)+(m-(M/B-1))m > (M/B-1)(m/B)+\frac{1}{2}m^2 > \frac{1}{2}m^2 = \Omega(n)$ \ios.
+        
+        \textbf{Answer2:}
+        Consider the algorithm uses \lru and have $2M$ memory. When it computes the average value of a matrix of size $m*m$, $m>2M/B$. we already proved that it will use $m*m=n$ \ios.
+        From Theorem 5.3:
+        $$\textrm{\sc Min}(\textrm{\alg}, M) > \frac{1}{2} \cdot \textrm{\lru}(\textrm{\alg}, 2M)$$
+        $$\textrm{\sc Min}(\textrm{\alg}, M) > \frac{1}{2} \cdot n = \Omega(n)$$
+        Since {\sc Min} is the optimal replacement policy, we them prove that any replacement policy will perform $Omega(n)$~\ios.
+        
+        %Computing the average value in an $m\times m$ array~$A$ column by column in array which is stored in row-major order. Will yield a block for each row in the column. When $m>2M/B$ yields that the blocks in each column is bigger then $2M$. The MIN pattern would fill up the memory $M$ with the first $M/B-1$ columns and swap the last entry with a new row. This would yield $n - (M/B -1) \cdot (m-1)$ \ios. Which is $\Omega(n)$~\ios.
+        
+        
+        %Note wrong: !! 
+        %From theorem 5.3 in the course notes it can be stated that $2 \cdot $MIN(Alg,$M$) $>$ %LRU(Alg,$2M$). 
+        %So we have to proof that LRU(Alg,$2M$) performs $\Omega(n)$~\ios. TODO take proof from %book. Hence if LRU(Alg,$2M$) performs  $\Omega(n)$~\ios 
         
         
         \item ($1+2\frac{1}{2}+2\frac{1}{2}$ points)
@@ -286,38 +304,74 @@
     \begin{rlist}
         
         \item (2 points)
-        Consider an algorithm that needs at most $c n\sqrt{n} / (MB)$ \ios if run with
-        optimal caching, for some constant $c$. Prove that the algorithm needs at most
-        $c' n\sqrt{n} / (MB)$ \ios when run with \lru caching, for a suitable constant $c'$.
-        \\[2mm]
-        \emph{Hint:} Compare the performance of both versions to running the algorithm with optimal
-        caching on a machine that has only half as much memory.
+        Consider an algorithm that needs at most $c n\sqrt{n} / (MB)$ \ios if run with optimal caching, for some constant $c$. Prove that the algorithm needs at most $c' n\sqrt{n} / (MB)$ \ios when run with \lru caching, for a suitable constant $c'$.
         
-        \item ($1$ point)
-        Suppose we wish to sort a set of $n$ numbers.
-        For the special case where the input consists of integers in the range $1,\ldots,n^2$,
-        there exists a sorting algorithms that runs in $O(n)$ time.
-        Is it possible that this algorithm performs $O(n/B)$ \ios for
-        any input of size~$n$? Briefly explain your answer.
+        \emph{Hint:} Compare the performance of both versions to running the algorithm with optimal caching on a machine that has only half as much memory.
         
+        \textbf{Answer:}
+        From Theorem 5.3, 
+        $$\textrm{\lru}(\textrm{\sc Alg}, M) \leq \frac{M}{M-M^{'}+B} \cdot \textrm{\sc Min}(\textrm{\sc Alg}, M^{'})$$
+        Apply the \ios of this algorithm using \lru and {\sc Min} to the inequality above:
+        %$$\textrm{\lru} \leq \frac{M}{M-M^{'}+B} \cdot c \cdot \frac{n \sqrt{n}}{MB}$$
+        $$c^{'} \cdot \frac{n \sqrt{n}}{MB} \leq \frac{M}{M-M^{'}+B} \cdot c \cdot \frac{n \sqrt{n}}{M^{'}B}$$
+        Given that $M^{'} = \frac{M}{2}$:
+        $$c^{'} \leq \frac{M}{\frac{1}{2}M+B} \cdot c \cdot 2$$
+        Rewriting:
+        %$$c^{'} \leq  4 \cdot c$$ 
+        $$c^{'} \leq \frac{4M}{M+2B} \cdot c$$
+        Since we need an upper bound for our algorithm, we will define $c^{'} = \frac{4M}{M+2B} \cdot c$
         
+        \item (1 point)
+        Suppose we wish to sort a set of $n$ numbers. For the special case where the input consists of integers in the range $1,\ldots,n^2$, there exists a sorting algorithms that runs in $O(n)$ time. Is it possible that this algorithm performs $O(n/B)$ \ios for any input of size~$n$? Briefly explain your answer.
+        
+        \textbf{Answer:}
+        Yes, that is indeed possible. To be more precise, it is always true. By definition, a complexity of $O(n)$ means that for some values $x$ and $y$, the running time of the algorithm will never exceed $x \cdot n$ for any $n \geq y$. In the best case scenario, the algorithm sorts in such a way that every block will have to be fetched from and stored in the external memory only once, giving an \io complexity of $O(2 \cdot n/B)=O(n/B)$ \ios. In the worst case scenario, every time a block is needed it must be fetched from and stored again in the external memory. In this case, we have an \io complexity of $O(2 \cdot x \cdot n/B) = O(n/B)$. In any case the \io complexity of this algorithm is $O(n/B)$ \ios.
         
         \item (3 points)
-        Analyze the running time (not the number of \ios) of algorithm \emph{EM-MergeSort}.
-        Does it still run in $O(n\log n)$ time? If not, explain how to implement the
-        merge step to make it run in $O(n\log n)$ time.
+        Analyze the running time (not the number of \ios) of algorithm \emph{EM-MergeSort}. Does it still run in $O(n\log n)$ time? If not, explain how to implement the merge step to make it run in $O(n\log n)$ time.
         
+        \textbf{Answer:}
+        \emph{EM-MergeSort} uses a divide and conquer strategy where the input n gets divided in k sub arrays. The number of sub problems grows by k for each level but for each level the merging time decreases by factor k. As shown in figure 2 the growth and division cancel each other out whereas the total merging time stays n. 
+        \begin{figure}[H]
+            \includegraphics[scale=1.00]{figs/IO_II_3.png}
+            \caption{Recursion tree for \emph{EM-MergeSort}}
+            \label{fig:io-ii-3}
+        \end{figure}
+        The recursion can be denoted as $T(n) = \sum\limits_{i=1}^k T(n/k) + O(n)$
+        Using $T(n)$ and the recursion tree it can be said that the running time of \emph{EM-MergeSort} is $l \cdot n$ where $l$ denotes the height of the tree. The height of the tree can be denoted as $l = \log_k n$. Therefore the running time of \emph{EM-MergeSort} is  $O(n\log n)$.
         
         \item(3 points)
-        In the proof of Theorem~6.2 we assumed that the algorithm only
-        uses the blocks of the input array $A$, it does not use any additional storage
-        in the external memory. Prove that without this assumption the same asymptotic lower
-        bound holds.
-        \\[2mm]
-        \emph{Hint:} Consider a permutation algorithm that \emph{does} use additional memory blocks.
-        Show that the algorithm can be modified such that the assumption is satisfied---that is,
-        such that all write operations are to blocks in $A$---while not increasing the number
-        of \ios by more than a factor~3.
+        In the proof of Theorem~6.2 we assumed that the algorithm only uses the blocks of the input array $A$, it does not use any additional storage in the external memory. Prove that without this assumption the same asymptotic lower bound holds.
+        
+        \emph{Hint:} Consider a permutation algorithm that \emph{does} use additional memory blocks. Show that the algorithm can be modified such that the assumption is satisfied---that is, such that all write operations are to blocks in $A$---while not increasing the number of \ios by more than a factor~3.
+        
+        \textbf{Answer:}
+        
+        I use the same symbol except for $X$ to denote the variables in my proof.
+        
+        Let's consider an algorithm {\sc Alg} that can solve this permutation problem in $Q~(Q<n^2)$ \ios in the worst case and does use additional storage in external memory. First, we need to define the output state differently from that used to prove Theorem~6.2. The external memory is formatted into blocks of size $B$. The input array occupies $n/B$ blocks in external memory. The extra storage that \alg can use consists of $C~(C<Q)$ blocks. This lead to at least $C$ empty blocks in external memory. The output state in \alg should now contain not only those blocks occupied by the array, but also the blocks in additional space. % Every such block should have a imaginary flag meaning they are used or not. (Used means it is used to store input or is written to by Write \ios). State in {\sc Alg} should be the state of all \emph{used} blocks.
+        \begin{enumerate}
+            \item[-] Similarly, we derive a bound on the total number of states that \alg must be able to reach to produce all possible permutations. There is one output state where $M=\phi$ and every element is in its right blocks (no matter in what order within the block), which occupy the same external memory space as input array again after all these permutations. The bound in \alg is different from that in Theorem~6.2 in that we need to choose $\frac{n}{B}$ blocks from $C+\frac{n}{B}$ blocks. Thus, the total number of different output state becomes:
+            $$\binom{C+\frac{n}{B}}{\frac{n}{B}} \cdot \frac{n!}{(B!)^{n/B}}$$
+            \item[-] The read operation defined in proof of Theorem~6.2 is still valid: after a read operation the number of the states increases by $\frac{n}{B}$ at most. (Suppose \alg doesn't read empty blocks because this is a movement-only model.)
+            \item[-] The write operation would be different from that in the proof of Theorem~6.2. There are at most $n/B+C$ empty blocks available. Hence, a write operation in \alg increases the number of state by $\binom{M}{B}\cdot (\frac{n}{B}+C)$
+        \end{enumerate}
+        Follow similar procedure of proving Theorem 6.2:
+        $$\binom{C+\frac{n}{B}}{\frac{n}{B}} \cdot \frac{n!}{(B!)^{n/B}} \leq (\frac{n}{B})^{Q/2} \cdot (\binom{M}{B}\cdot (\frac{n}{B}+C))^{Q/2}$$
+        $$(Q/2) \cdot \log((n/B)\binom{M}{B}(n/B+C)) \geq \log(\binom{C+\frac{n}{B}}{\frac{n}{B}})+\log(\frac{n!}{(B!)^{n/B}})$$
+        $$(Q/2) \cdot \log((n/B)\binom{M}{B}(n/B+C)) \geq \log(\frac{n!}{(B!)^{n/B}})$$
+        Consider the left-hand side of the inequality above first, from the assumption that $n<B\sqrt{\binom{M}{B}}$, we can derive that:
+        $$\frac{n}{B} < \binom{M}{B} \textrm{~and~} \frac{n}{B}+C<\binom{M}{B}$$
+        $$3\log(\binom{M}{B}) > \log((n/B)\binom{M}{B}(n/B+C))$$
+        Using the inequality $\binom{M}{B} \leq (\frac{eM}{B})^B$, we obtain
+        $$\frac{3}{2}\log(\binom{M}{B})<3B\log(\frac{M}{B})$$
+        From the proof of Theorem 6.2, we also use Stirling's approximation to bound the right-hand side as
+        $$\log(\frac{n!}{(B!)^{n/B}}) = \Omega(n\log(n/B))$$
+        Combining all above,
+        $$Q \geq \frac{\Omega(n\log(n/B))}{3B\log(\frac{M}{B})}$$
+        $$Q \geq \Omega((n/B)\log_{M/B}(n/B))$$
+        Asymptotically, \alg has the same bound as the algorithm in Theorem 6.2.
+        
     \end{rlist}
     
     
@@ -331,40 +385,51 @@
     \begin{rlist}
         
         \item ($2 + 2$ points)
-        Consider a balanced binary search tree $\tree$ with $n$ internal nodes that is stored in external memory.
-        You may assume that $n=2^k-1$ for some integer~$k$, and that the tree is perfectly balanced.
+        Consider a balanced binary search tree $\tree$ with $n$ internal nodes that is stored in external memory. You may assume that $n=2^k-1$ for some integer~$k$, and that the tree is perfectly balanced.
         Hence, its depth is~$\log_2 (n+1)$.
         \begin{enumerate}
             \item[(i)]
-            Describe blocking strategy that guarantees that any root-to-leaf
-            path in $\tree$ can be traversed in $O(\log_B n)$. What is the relation of your blocking
-            strategy to B-trees?
+            Describe blocking strategy that guarantees that any root-to-leaf path in $\tree$ can be traversed in $O(\log_B n)$. What is the relation of your blocking strategy to B-trees?
             \item[(ii)]
-            Prove that for \emph{any} blocking strategy there will be a root-to-leaf path that
-            visits $\Omega(\log_B n)$ blocks. To simplify the proof you may assume that
-            the blocking strategy has the following property: for each block $b$, the nodes in
-            $b$ form a connected part of $\tree$. This implies that whenever a root-to-leaf path
-            leaves a block, it will not re-enter that block. 
+            Prove that for \emph{any} blocking strategy there will be a root-to-leaf path that visits $\Omega(\log_B n)$ blocks. To simplify the proof you may assume that the blocking strategy has the following property: for each block $b$, the nodes in $b$ form a connected part of $\tree$. This implies that whenever a root-to-leaf path leaves a block, it will not re-enter that block. 
         \end{enumerate}
         
+        \textbf{Answer:}
+        \begin{enumerate}
+            \item[(i)]
+            A blocking strategy for $O(\log_B n)$ \ios is storing a subtree up to a depth of $log_2 B$. Whereas any step in the root-to-leaf path is a new subtree. The root-to-leaf path is the depth of the tree which is $O(\log_2 n)$ divide it by the amount that can be reached per \io then the \io cost is $O(\frac{\log_2 n}{\log_2 B}) = O(log_B n)$
+            
+            
+            This blocking strategy is comparable to a one of a B-tree where the branching degree k is set to 2.
+            
+            \item[(ii)]
+            The blocking strategy in (i) is a optimal strategy for a perfectly balanced binary tree hence all paths will be of depth $log_2 B$. If the blocking strategy is changed to make a path longer and B stays the same, then another path must become shorter. Then for any blocking strategy there is always a root-to-leaf path that visits $\Omega(\log_B n)$ blocks.
+        \end{enumerate} 
         \item (2 points)
-        The \io-efficient priority queue described above keeps a set $S^*$ in internal memory
-        that contains $M/4$ elements when $S^*$ is created. The next $M/4$ operations are then
-        performed on $S^*$, after which the elements that still remain in $S^*$ are inserted
-        into the buffer tree (and $S^*$ is emptied).
-        Someone suggests the following alternative approach: instead of only performing
-        the next $M/4$ operations on $S^*$, we keep on performing
-        \emph{Extract-Min} and \emph{Insert} operations on $S^*$ until $|S^*|=M$.
-        Does this lead to correct results? Explain your answer.
+        The \io-efficient priority queue described above keeps a set $S^*$ in internal memory that contains $M/4$ elements when $S^*$ is created. The next $M/4$ operations are then performed on $S^*$, after which the elements that still remain in $S^*$ are inserted into the buffer tree (and $S^*$ is emptied). Someone suggests the following alternative approach: instead of only performing the next $M/4$ operations on $S^*$, we keep on performing \emph{Extract-Min} and \emph{Insert} operations on $S^*$ until $|S^*|=M$. Does this lead to correct results? Explain your answer.
+        
+        \textbf{Answer:}
+        This won't lead to correct results. Inserting a key with priority higher than a priority that is still in external memory will create a temporary node position in $S^*$. After $M/4$ operation there's a flush that will place this node in the right position in $\tau_{buf}$. But if we continue to perform operations on $S^*$, the \emph{Extract-Min} operation can only guarantee that the node extracted has the minimal priority within $S^*$, not minimal among entire $\tau_{buf}$. 
+        
+        For example, the range of the priority in $S^*$ is $[1, 50]$, the range of the priority in the node remaining in $\tau_{buf}$ is $[51, 100]$. When inserting a key \textbf{K} with priority 60, it will first be inserted to $S^*$ in memory. Key \textbf{K} will not be extracted before $M/4$ operations because there's definitely other keys with lower priority. However, after $M/4$ operations, when all the keys loaded from the the external memory might be extracted, the algorithm will extract key \textbf{K}. This is wrong because \textbf{K}'s priority is~60. There might be external keys with priority 55.
         
         \item (4 points)
-        A \emph{coloring} of an undirected graph~$\G=(V,E)$ is an assignment of colors to
-        the nodes of $\G$ such that if $(v_i,v_j)\in E$ then $v_i$ and $v_j$ have different colors.
-        Suppose that $\G$ is stored in the form of an adjacency list in external memory.
-        Assume the maximum degree of any node in $\G$ is~$d_{\max}$. Give an algorithm that computes
-        a valid coloring for $\G$ that uses at most $d_{\max}+1$ colors. Your algorithm should perform
-        $O(\sort(|V|+|E|)$ \ios.
+        A \emph{coloring} of an undirected graph~$\G=(V,E)$ is an assignment of colors to the nodes of $\G$ such that if $(v_i,v_j)\in E$ then $v_i$ and $v_j$ have different colors. Suppose that $\G$ is stored in the form of an adjacency list in external memory. Assume the maximum degree of any node in $\G$ is~$d_{\max}$. Give an algorithm that computes a valid coloring for $\G$ that uses at most $d_{\max}+1$ colors. Your algorithm should perform $O(\sort(|V|+|E|)$ \ios.
         
+        \textbf{Answer:}
+        First, we turn $\G$ into the {\sc dag} $\G^*$ by directing every edge $(v_i, v_j) \in E$ from the node with the smaller index to the node with the higher index. We do not have to do anything to the data, since the data is already by definition stored in a topological way in the external memory: we can just interpret the representation of $\G$ as a representation of $\G^*$.
+        
+        Define $C$ to be the set of $d_{\max}+1$ unique colours. Define $N_{in}(v_i)$ to be the set of all in-neighbours of $v_i$. Define the local function $f$ on the nodes as follow.
+        \begin{itemize}
+            \item
+            If $|N_{in}(v_i)| = 0$ then $f(v_i)$ may be any color $c \in C$.
+            \item
+            If $|N_{in}(v_i)| > 0$ then $f(v_i)$ may be any color $c \in C \setminus f\left(N_{in}(v_i)\right)$.
+        \end{itemize}
+        
+        It is easy to see that $\G$ is now colored in such a way that for every edge $(v_i, v_j) \in E$, the two nodes $v_i$ and $v_j$ have different colours, thus meeting the requirement. If a node $v_i$ has no in-neighbours, $f$ will give it per definition a colour unique to its in-neighbours. If a node $v_i$has one or more in-neighbours, $f$ will give it a colour unique to all its in-neighbours, since $C = d_{\max}+1 > d_{max} \geq |N_{in}(v_i)|$ proves that such a colour is always available from $C$. Because every node $v_i$ has a different colour than its in-neighbours, it must have a different colour than its out-neighbours have a different colour than their in-neighbour $v_i$.
+        
+        c    Since every $f(v_i)$ can be computed in $O(\sort(1+|N_{in}(v_i)|))$ \ios, we can compute the colouring of $\G$ using $O(\sort(|V|+|E|))$ \ios, as proven in Theorem 7.2 of the lecture notes.
     \end{rlist}
     
 \end{document} 
