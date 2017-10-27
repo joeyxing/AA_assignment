@@ -1,0 +1,422 @@
+\documentclass{article}
+
+\usepackage{algorithm,algpseudocode}
+\usepackage{a4wide,amsmath,amssymb,fancyhdr,graphicx,tabularx,xspace}
+
+%------------------------------------------------------------------------------
+\newcommand{\course}{Advanced Algorithms}
+\newcommand{\coursenumber}{2IMA10}
+\newcommand{\courseyear}{Fall 2017}
+%------------------------------------------------------------------------------
+\pagestyle{fancy}
+\chead{}
+\lhead{TU Eindhoven}
+\rhead{\course\ (\coursenumber) --- Homework Exercises, \courseyear}
+\cfoot{\thepage}
+\lfoot{}
+\rfoot{}
+%------------------------------------------------------------------------------
+
+%to include IPE/pdf correctly
+\expandafter\ifx\csname pdfoptionalwaysusepdfpagebox\endcsname\relax\else
+\pdfoptionalwaysusepdfpagebox5
+\fi
+
+
+\newcommand{\Reals}{{\Bbb R}}
+\newcommand{\Nats}{{\Bbb N}}
+\newcommand{\Ints}{{\Bbb Z}}
+
+\newcommand{\C}{\ensuremath{\mathcal{C}}}
+\newcommand{\E}{\ensuremath{\mathcal{E}}}
+\newcommand{\F}{\ensuremath{\mathcal{F}}}
+\newcommand{\G}{\ensuremath{\mathcal{G}}}
+\newcommand{\U}{\ensuremath{\mathcal{U}}}
+
+\newcommand{\tree}{\ensuremath{\mathcal{T}}}
+\newcommand{\node}{\nu}
+\newcommand{\lchild}{\mathrm{lc}}
+\newcommand{\rchild}{\mathrm{rc}}
+\newcommand{\size}{\mathit{size}}
+\newcommand{\leaf}{\mu}
+\newcommand{\mylist}{{\cal L}}
+\newcommand{\myroot}{\mathit{root}}
+\newcommand{\key}{\mathit{key}}
+\newcommand{\bd}{\partial}
+
+\newcommand{\myopt}{\mbox{{\sc opt}}\xspace}
+\newcommand{\lb}{\mbox{{\sc lb}}\xspace}
+\newcommand{\loadb}{{\sc Load Balancing}\xspace}
+
+\newcommand{\vc}{{\sc Vertex Cover}\xspace}
+\newcommand{\wvc}{{\sc Weighted Vertex Cover}\xspace}
+\newcommand{\wsetc}{{\sc Weighted Set Cover}\xspace}
+\newcommand{\tsp}{{\sc TSP}\xspace}
+\newcommand{\mst}{{\sc MST}\xspace}
+\newcommand{\twoMissingItems}{{\sc Two Missing Items}\xspace}
+\newcommand{\median}{{\sc Median}\xspace}
+\newcommand{\distinctItems}{{\sc Distinct Items}\xspace}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\ol}{\overline}
+\renewcommand{\leq}{\leqslant}
+\renewcommand{\geq}{\geqslant}
+
+\newcommand{\pr}[1]{\Pr[#1]}
+\DeclareMathOperator{\expectation}{E}
+\newcommand{\expt}[1]{\expectation[#1]}
+\newcommand{\events}[1]{\mbox{Events}(#1)}
+\newcommand{\rank}{\mathit{rank}}
+\newcommand{\result}{\mathit{result}}
+\newcommand{\piv}{\mathrm{piv}}
+\newcommand{\myexp}{\mathrm{exp}}
+\newcommand{\best}{\mathrm{best}}
+\newcommand{\worst}{\mathrm{worst}}
+\newcommand{\dest}{\mathit{dest}}
+\newcommand{\dist}{\mathit{distance}}
+\newcommand{\weight}{\mathit{weight}}
+\newcommand{\mylength}{\mathit{length}}
+\newcommand{\length}{\mathit{length}}
+\newcommand{\mymid}{\mathrm{mid}}
+\newcommand{\alg}{{\sc Alg}\xspace}
+
+\newcommand{\start}{\mathit{start}}
+\newcommand{\myend}{\mathit{end}}
+\newcommand{\free}{\mathit{free}}
+\newcommand{\true}{{\sc True}\xspace}
+\newcommand{\false}{{\sc False}\xspace}
+
+\newcommand{\etal}{{\emph{et al.}\xspace}}
+
+\newcommand{\io}{{\sc i/o}\xspace}
+\newcommand{\ios}{{\io}s\xspace}
+\newcommand{\lru}{{\sc lru}\xspace}
+\newcommand{\sort}{\mbox{\sc Sort}}
+
+%------------------------------------------------------------------------------
+% Theorem-Like Environments
+%------------------------------------------------------------------------------
+\newtheorem{defin}{Definition}
+\newenvironment{mydefinition}{\begin{defin} \sl}{\end{defin}}
+\newtheorem{theo}[defin]{Theorem}
+\newenvironment{mytheorem}{\begin{theo} \sl}{\end{theo}}
+\newtheorem{lem}[defin]{Lemma}
+\newenvironment{mylemma}{\begin{lem} \sl}{\end{lem}}
+\newtheorem{propo}[defin]{Proposition}
+\newenvironment{myproposition}{\begin{propo} \sl}{\end{propo}}
+\newtheorem{coro}[defin]{Corollary}
+\newenvironment{corollary}{\begin{coro} \sl}{\end{coro}}
+
+\newenvironment{myproof}{\emph{Proof.}}{\hfill $\Box$ \medskip\\}
+
+%------------------------------------------------------------------------------
+\newcounter{rcounter}
+\newenvironment{rlist}%
+{\begin{list}{\setnr-\arabic{rcounter}}{\usecounter{rcounter}}}{\end{list}}
+\newcounter{rcountermem}
+%------------------------------------------------------------------------------
+
+\title{Advanced Algorithm Assignment III}
+\author{Freerk Hendrik Oudman, Pieter Jacob van der Perk, Weizhou Xing}
+\date{\today}
+
+\begin{document}
+    \maketitle
+    %------------------------------------------------------------------------------
+    \section*{Homework Exercises on Streaming Algorithms}
+    %------------------------------------------------------------------------------
+    The maximum number of points for all exercises is~30.
+    The grade for this homework set is: (number of scored points)/3.
+    
+    %------------------------------------------------------------------------------
+    \newcommand{\setnr}{Str.I}
+    \subsection*{Exercise Set Streaming Algorithms I}
+    %------------------------------------------------------------------------------
+    \begin{rlist}
+        
+        \item (4 points) Consider the following problem in the vanilla streaming model.
+        \begin{quotation}\noindent
+            \twoMissingItems: Given a stream $\sigma=\langle a_1,\ldots,a_{n-2}\rangle$ over the universe $[n]$ in which all items in $\sigma$ are different, compute the items $j_1,j_2\in [n]$ that are missing from~$\sigma$.
+        \end{quotation}
+        Note that only streams of length $n-2$ are considered and that all items in the stream are distinct, which implies there are exactly two missing items.
+        
+        Either prove that any deterministic streaming algorithm that solves \twoMissingItems exactly must use $\Omega(n)$ bits in the worst case, or give a deterministic streaming algorithm that solves \twoMissingItems exactly using a sub-linear number of bits. If you give an algorithm, you should also prove its correctness and analyze the number of bits of storage it uses.
+        
+        \textbf{Answer:}
+        Define $x$ and $y$ to be the two missing items. We can now calculate the following two properties:
+        
+        $$p_1 = x + y = \sum_{k=1}^n k - \sum_{k=1}^{n-2} a_k = \frac{n(n+1)}{2} - (a_1 + a_2 + \ldots + a_{n-2})$$
+        $$p_2 = x^2 + y^2 = \sum_{k=1}^n k^2 - \sum_{k=1}^{n-2} a_k^2 = \frac{n(n+1)(2n+1)}{6} - (a_1^2 + a_2^2 + \ldots + a_{n-2}^2)$$
+        
+        This set of equations can now be solved:
+        $$p_1 = x + y \implies y = p_1 - x$$
+        $$p_2 = x^2 + y^2 = x^2 + (p_1-x)^2$$
+        $$0 = x^2 + p_1^2 - 2p_1x + x^2 - p_2$$
+        $$= 2x^2 + (-2p_1)x + (p_1^2 - p_2)$$
+        $$x = \frac{2p_1 \pm \sqrt{(-2p_1)^2 - 4\cdot2(p_1^2 - p_2)}}{2\cdot2}$$
+        $$= \frac{2p_1 \pm \sqrt{-4p_1^2 + 8p_2}}{2\cdot2}$$
+        $$= \frac{1}{2}\left(p_1 \pm \sqrt{2p_2 - p_1^2}\right)$$
+        $$= \frac{1}{2}\left(p_1 + \sqrt{2p_2 - p_1^2}\right) \vee \frac{1}{2}\left(p_1 - \sqrt{2p_2 - p_1^2}\right)$$
+        
+        Since $2p_2-p_1^2 = 2(x^2 + y^2) - (x+y)^2 = (x-y)^2 \geq 0$, and $\frac{1}{2}\left(p_1 + \sqrt{2p_2 - p_1^2}\right) + \frac{1}{2}\left(p_1 - \sqrt{2p_2 - p_1^2}\right) = p_1$ and $x+y=p_1$, we have the following real and unique solution for $x$ and $y$:
+        $$x = \frac{1}{2}\left(p_1 + \sqrt{2p_2 - p_1^2}\right)$$
+        $$y = \frac{1}{2}\left(p_1 - \sqrt{2p_2 - p_1^2}\right)$$
+        
+        Storing the values of $p_1$ and $p_2$ takes the following number of storage bits:
+        $$O(p_1+p_2) = O(\log_2 \frac{n(n+1)}{2} + \log_2 \frac{n(n+1)(n+2)}{6}) = O(\log n)$$
+        
+        %$$log(\frac{n(n+1)}{2}) = \Omega(log(n))$$
+        %$$log(\frac{n(n+1)(n+2)}{6}) = \Omega(log(n))$$
+        %The total number of bits in this case is $\Omega(log(n))$.
+        
+        %\textbf{Proof of correctness:}
+        %We have two formulas and two unknown number. This simultaneous equations must have a pair of unique solutions. Since x and y should be positive integer, we can then discard a pair of solution and keep the solution whose $x$ ans $y$ are both positive.
+        
+        \item (4 points)      
+        Consider the following problem in the vanilla streaming model.
+        \begin{quotation}\noindent
+            {\sc ConsecutiveTriple}: Given a stream $\sigma=\langle a_1,\ldots,a_m\rangle$ of
+            $m$ distinct items over the universe $[n]$, decide if there are items
+            $a_i,a_j,a_k$ with $a_j=a_i+1$ and $a_k=a_j+1$.
+        \end{quotation}
+        For example, for $\sigma=\langle 3,7,17,11,9\rangle$ the output should be {\sc no},
+        and for $\sigma=\langle 3,7,17,6,8\rangle$ the output should be {\sc yes} (because
+        of the triple 6,7,8).
+        Prove that for $m<n/3$ any deterministic streaming algorithm that solves
+        {\sc ConsecutiveTriple} exactly must use $\Omega(m\log(n/m))$ bits in the worst case. 
+        
+        \textbf{Answer:}
+        Proof:
+        
+        Let S be the number of bits used by the Algorithm \alg, which can solve {\sc ConsecutiveTriple} exactly.
+        Then after processing first $m-2$ items the Algorithm can be in $2^S$ states. Let X be all streams of length $m-2$ with all distinct items. Then the number of streams in $X = \binom{n}{m-2} \geq (\frac{n}{m-2})^{m-2}$.
+        Then if $|X| = \binom{n}{m-2}$ $\geq$ $2^S$, there are different streams $\sigma_1, \sigma_1\prime \in X$ such that the Algorithm end up in the same state. Now take $j,k$ such that $j,k$ can form a {\sc ConsecutiveTriple} with one item in $\sigma_1$ but not with any item in $\sigma_1\prime$. Such an item always exist because $\sigma_1$ and $\sigma_1\prime$ are different. Thus \alg will give the same result for stream $\sigma_1+[j,k]$ and stream $\sigma_1\prime+[j,k]$. This is wrong because \alg should be deterministic.
+        
+        Hence, 
+        $$2^s \geq \binom{n}{m-2} = (\frac{n}{m-2})^{m-2}=2^{(m-2)log(\frac{n}{m-2})}$$
+        $$s \geq (m-2)log(\frac{n}{m-2}) = \Omega(m\log(n/m))$$
+        \item (3 points)
+        The problem of finding frequent items in a stream can be generalized to the cash-register model. To this end, we say that an item $j\in [n]$ is \emph{$\eps$-frequent} if $F_{\sigma}[j] > \eps \cdot \sum_{k=1}^n F_{\sigma}[k]$.
+        
+        Now consider Algorithm~8.1 from the Course Notes, which computes a subset $I\subseteq [n]$ that contains all $\eps$-frequent items in a stream in the vanilla model. Explain how to adapt the algorithm so that it also works in the cash-register model, and argue that it correctly computes a superset of the $\eps$-frequent items. NB: the time to process a token $(j,c)$ should not depend on~$c$.
+        
+        \textbf{Answer:}
+        We modify Algorithm 8.1 in the following way:
+        \begin{algorithmic}[1]
+            \State $I \gets \emptyset$
+            \For{every item $(a_j, a_c) \in \sigma$}
+            \If{$a_j \in I$}
+            \State $c(a_j) \gets c(a_j) + a_c$
+            \Else
+            \State Insert $a_j$ into $I$ with counter $c(a_j)=a_c$
+            \If{$|I| \geq 1/\varepsilon$}
+            \State $c_{min} = \min(c)$
+            \For{all items $x \in I$}
+            \State $c(x) \gets c(x) - c_{min}$; delete $x$ from I when $c(x)=0$
+            \EndFor
+            \EndIf
+            \EndIf
+            \EndFor
+            \State \Return $I$
+        \end{algorithmic}
+        Similarly, we interpret the algorithm as computing an estimation on the frequency vector $\tilde{F}_{\sigma}[j]$ of each item $j \in [n]$ in the cash-register model stream $\sigma$, all the items in $I$ have frequency $c(j)$ and other items have frequency $0$.
+        \begin{equation*}
+        F_{\sigma}[j] - (\text{Number of decrement to~} c(j)) = \tilde{F}_{\sigma}[j] \leq F_{\sigma}[j]
+        \end{equation*}
+        Total increment in this algorithm is the sum of $c$ of every item in stream. Because every time we decrement counters in $I$, we always choose the one with the minimum c. We can guarantee that the total decrement is less than total increment.
+        $$(\text{Total decrement to c(j)}) \cdot \lceil\frac{1}{\varepsilon}\rceil \leq \sum_{k=1}^n F_{\sigma}[k]$$
+        Thus, if $F_{\sigma}[j] > \eps \cdot \sum_{k=1}^n F_{\sigma}[k]$, $j$ is definitely in set $I$. 
+        
+        By definition, every token $(j, c)$ has $c>0$ in the cash-register model. This property gives us the possibility to translate every cash-register token $(j,c)$ to $c$ vanilla tokens with value $j$. Using this translation property, we can now compare the original algorithm with our modified version.
+        
+        Our lines 3 and 4 of behave exactly the same as the original line 1.
+        
+        In case $a_j \not\in I$, the original algorithm would perform $k$, with $1 \leq k \leq c$, rounds of the main \emph{else}, until $|I| \leq 1/\varepsilon$, followed by $c-k$ rounds of the main \emph{then}. Our algorithm performs in such a situation one round of the \emph{else} part, in where all items $x \in I$ with $x = c_{min}$ are removed. It easy to see that the $k$ in the original algorithm must have the same value as the $c_{min}$ in the old algorithm, which shows us that this second part of our algorithm has as well exactly the same behaviour as the original algorithm.
+        
+        All in all, our algorithm behaves exactly the same as the original algorithm. Since the original algorithm is proved to be correct, this proves that our algorithm is correct as well. 
+        
+        \emph{Note:} Instead of calculating $c_{min}$ for every new inserted token, we could keep track of the value of this variable by keeping a counter at lines 2/3 and 10. This way, we have the same computational complexity as the original algorithm.
+        
+    \end{rlist}
+    
+    %------------------------------------------------------------------------------
+    \renewcommand{\setnr}{Str.II}
+    \subsection*{Exercise Set Streaming Algorithms II}
+    %------------------------------------------------------------------------------
+    \begin{rlist}
+        
+        \item (4 points)
+        Suppose we want a streaming algorithm (in the vanilla model) that reports a $(1/10)$-approximate median with probability at least~$0.95$. Show how to pick the value of $k$ in the initialization of Algorithm~9.1 to achieve this, where you should pick~$k$ as small as possible.
+        
+        \textbf{Answer:}
+        Since this is a $(1/10)$-approximation median, the failure circumstances are when the rank of reported median lies in the first $2/5$ or the last $2/5$ ranks. Define $X_i, Y_i$ similar to that in \alg 9.1, for $i \in {1,2,...,k}$:
+        \begin{equation*}
+        X_i=
+        \begin{cases}
+        1, & \text{if}\ rank(a_{ri})>(3/5)\cdot (m+1) \\
+        0, & \text{otherwise}
+        \end{cases}
+        \end{equation*}
+        \begin{equation*}
+        Y_i=
+        \begin{cases}
+        1, & \text{if}\ rank(a_{ri})<(2/5)\cdot (m+1) \\
+        0, & \text{otherwise}
+        \end{cases}
+        \end{equation*}
+        Define $X$ as the sum of $X_i$, define $Y$ as the sum of $Y_i$:
+        $$E(X)=2k/5$$
+        $$E(Y)=2k/5$$
+        We need to use Chernoff bound for Poisson trials to find a suitable k, this time our $\mu$ will be $2k/5$.
+        If the reported median is not a $(1/10)$-approximation, then either half of the samples rank greater than $(3/5) \cdot (m+1)$ or less that $(2/5) \cdot (m+1)$. According to Chernoff bound for Poisson trials:
+        \begin{equation*}
+        P=Pr[E(X)>k/2]=Pr[E(X)>(1+\frac{1}{4}) \cdot \mu] < (\frac{e^{\delta}}{(1+\delta)^{1+\delta}})^{\mu}
+        \end{equation*}
+        The same probability for $Pr[E(Y)]>k/2$ because they are symmetric. So $\delta$ in this case will be $\frac{1}{4}$. Hence,
+        \begin{align*}
+        &Pr[\text{reported item is a (1/10)-approximation median}]=1-2*P \geq 0.95 \\
+        &P < (\frac{e^{\frac{1}{4}}}{\frac{5}{4}^{\frac{5}{4}}})^{2k/5} \leq 0.025 \\
+        &0.9885^k \leq 0.025
+        \end{align*}
+        Solving this inequality, we get $k~\geq~319$. Hence the minimal $k$ we can pick is 319.
+        
+        \item (3 points)
+        The streaming algorithm for \median assumes that $m$, the length of the stream, is known beforehand. Adapt the algorithm to the case where $m$ is not known beforehand. In other words, after receiving any item $a_i$, your algorithm should report a (1/4)-approximate median of $\langle a_1,\ldots,a_i\rangle$ with probability at least $1-\delta$. Argue that your algorithm indeed reports a (1/4)-approximate median with the desired probability.
+        
+        \textbf{Answer:}
+        
+        \begin{algorithm}
+            \vspace*{2mm}
+            \begin{quotation}
+                \noindent
+                \emph{ApproxStreamingMedian}$(\langle a_1,...,a_m \rangle)$ \\[-5mm]
+                \begin{algorithmic}[1]
+                    \State $A($k$)$
+                    \State $n \leftarrow 1$
+                    \While{"Stream has data"}
+                    \State $a = $ readStream() 
+                    \If{$n < $k}
+                    \State $A(n$++$) \leftarrow a$
+                    \Else
+                    \State $r \leftarrow random(0,$++$n)$
+                    \If{$r < $k}
+                    \State $A(r) \leftarrow a$
+                    \EndIf
+                    \EndIf
+                    \EndWhile
+                    \State $Sort(A)$
+                    \State return $Median(A)$
+                \end{algorithmic}
+            \end{quotation}
+        \end{algorithm}
+        
+        This algorithm does not depends on $m$ (the length of stream). The while loop can be terminated anytime, and the algorith will yield a approximated median. The function $Sort(A)$ and $Median(A)$ take constant time because $A$ is a buffer with a constant size k.
+        
+        The reservoir array $A$ gets filled with elements untill its full. When $n>k$ then an element in k gets replaced with a new one with a probablity of $1/k \cdot k/n = 1/n$. When the algorithm is finished with executing each item in A has a equal probability of $k/n$ of being inserted in A. This is the same uniform distribution as picking $r_i$ as in \emph{Algorithm 9.1}. Therefore the lemma 9.6 and theorem 9.7 applies on \emph{ApproxStreamingMedian} as well. Therefore \emph{ApproxStreamingMedian} reports (1/4)-approximate median of $\langle a_1,\ldots,a_i\rangle$ with probability at least $1-\delta$.
+        
+        \item (4 points)
+        Give a multi-pass streaming algorithm that solves \median exactly and that uses $O(\log m)$\footnote{The pdf on Canvas says $O(\log n)$, but I assume this is a typo.} bits of storage. The expected number of passes of your algorithm should be $O(\log n)$.
+        
+        \textbf{Answer:}
+        A fast way to look for a specific value in an ordered array is by the usage of binary search: take the element in the middle of the array, check the value of this element and compare it with the desired value, and depending if the found value is bigger or small, recursively continue looking in the first or the second half of the array, until you find the desired element. This algorithm has a complexity of $O(\log_2 n)$ for an array of length $n$.
+        
+        This binary search algorithm cannot directly be applied to our specific case, but we do can use the same idea of iteratively decreasing the search area until \median is solved.
+        
+        The idea is the following: divide the range $\langle 1, \ldots, n\rangle$ into $k$ different blocks: $\langle \langle 1, \ldots, \lfloor \frac{n}{k}\rfloor \rangle, \ldots, \langle \lfloor (k-1) \frac{n}{k} \rfloor + 1, \ldots, n \rangle \rangle$. Then pass once over the data stream, and count per block the number elements that fit into that block. After this pass, find in which block the median value is in, and repeat all steps for this specific block.
+        
+        In case of $k=2$, the algorithm will be the following: (see next page)
+        \begin{algorithm}
+            \vspace*{2mm}
+            \begin{quotation}
+                \noindent
+                \emph{ExactMedian}$(n, \langle a_1,...,a_m \rangle)$ \\[-5mm]
+                \begin{algorithmic}[1]
+                    \State $lower \gets 1$
+                    \State $upper \gets n$
+                    \State $median \gets \lfloor m/2 \rfloor$
+                    \While{$lower < upper$}
+                    \State $count = [0,0]$
+                    \ForAll{$a = \langle a_1,...,a_m \rangle$}
+                    \If{$a \geq lower \wedge a \leq (lower+\lfloor(upper-lower)/2\rfloor)$}
+                    \State $count(0)++$
+                    \ElsIf{$a > (lower+\lfloor(upper-lower)/2\rfloor) \wedge a \leq upper$}
+                    \State $count(1)++$
+                    \EndIf
+                    \EndFor
+                    \If{$count(0) \geq median$}
+                    \State $upper \gets lower + \lfloor(upper-lower)/2\rfloor$
+                    \Else
+                    \State $lower \gets lower + \lfloor(upper-lower)/2\rfloor + 1$
+                    \State $median \gets median - count(0)$
+                    \EndIf
+                    \EndWhile
+                    \State return $lower$
+                \end{algorithmic}
+            \end{quotation}
+        \end{algorithm}
+        
+        After every time the algorithm makes a pass over the stream, the search space will be decreased to $1/k$ of the original search space size. Since the starting search space has size $n$, the total number of passes of the algorithm is therefore $\Theta(\log_k n)$.
+        
+        Every pass, the algorithm needs to store $3$ numbers with a maximum value of $n$ and $k$ numbers with a maximum value of $m$. The total number of storage bits needed is therefore $O(3\log_2 n + k\log_2 m)$. If $n \ll m$, then we can simplify this to $O(k\log_2 m) = O(\log m)$. If $n \gg m$, then we can simplify this to $O(3\log_2 n) = O(\log n)$.
+        
+    \end{rlist}
+    
+    
+    
+    
+    %------------------------------------------------------------------------------
+    \renewcommand{\setnr}{Str.III}
+    \subsection*{Exercise Set Streaming Algorithms III}
+    %------------------------------------------------------------------------------
+    
+    \begin{rlist}
+        
+        \item (4 points)
+        Prove that for $m<n$ any deterministic streaming algorithm that solves \distinctItems exactly must use $\Omega(m\log(n/m))$ bits in the worst case.
+        
+        \textbf{Answer:}
+        
+        Suppose an algorithm \alg that solves \distinctItems exactly that uses $s$ bits of storage. The worst case of \distinctItems would be that all the items in stream $m$ are distinct. Specifically, the state of \alg can be in $2^s$ states after processing the first $m-1$ items in stream $m$.
+        
+        We suppose all the items in stream $m$ are distinct as it is the worst scenario. Thus the first $m-1$ items in stream $m$ can have $\binom{n}{m-1}$ different frequency vectors:
+        \begin{equation*}
+        \binom{n}{m-1} \geq (\frac{n}{m-1})^{m-1} = 2^{(m-1) \cdot log(\frac{n}{m-1})} = U
+        \end{equation*}
+        Hence when $2^s<U$ there can be two different streams sections $\sigma_1, \sigma_2$ of size $m-1$ that can have the same state in \alg. 
+        If we choose an item $i$ from universe $[n]$ that exists in $\sigma_1$ but not in $\sigma_2$ (because $\sigma_1$ and $\sigma_2$ are different and contain distinct items, this item always exists), and use $i$ as the last item in the $(m)$-long stream. \alg will give the same result for $[\sigma_1, i]$ and $[\sigma_2, i]$. This is wrong because \alg should be deterministic. Hence,
+        \begin{align*}
+        2^s &\geq U = 2^{(m-1) \cdot log(\frac{n}{m-1})} \\
+        s &\geq (m-1) \cdot log(\frac{n}{m-1}) = \Omega()
+        \end{align*}
+        Any deterministic algorithm that solves \distinctItems must use $\Omega(m\log(n/m))$ in the worst case.
+        
+        \item (4 points)
+        Consider the CountMin sketch to estimate the frequencies of the items in a stream in the vanilla model. Suppose $\eps=0.2$ and $\delta=0.5$ so that in the initialization phase we set~$k=10$ and~$t=1$ . Give an example of an input stream~$\sigma$ such that the probability is very high that for at least one of the items $j\in \sigma$ the estimate of its frequency is much larger than its actual frequency. More precisely, give an example such that (for $m$ large enough) the probability that there is an item $j$ with $\widetilde{F}_{\sigma}[j] - F_{\sigma}[j] > m/2$ is at least 0.95.
+        
+        \textbf{Answer:}
+        Consider the following scenario: we have a stream in which one value $v_0$ occurs very often, say $s$ times. All these items are now dropped into one hash group. Suppose there is some item with a unique value $v_j$ that hashes to the same hash and is therefore dropped into the same hash bin. Since we have only one trial, this item value now has a frequency estimation that is much higher than its actual frequency.
+        
+        Since we have $k=10$ hash groups, we can calculate the number of unique values that we need in order to get to desired probability:
+        $$P\left(\exists j \in [1\ldots r], \quad h(v_j) = h(v_0)\right) = 1-P(\forall j \in [1\ldots r], \quad h(v_j) \neq h(v_0)) = 1 - \left(\frac{1}{k}\right)^r$$
+        Solve for $P>0.95$ and $k=10$:
+        $$1-0.9^r > 0.95 \implies 0.9^r < 0.05 \implies r \geq 29$$
+        
+        So, we need $r=29$ items with unique values, but how many $s$ items with a  do we need with a thirtieth value? In the worst case scenario, only one of the $r$ unique items is hashed to the same value as the high-frequent value. In that scenario, we still need $\widetilde{F}_{\sigma}[j] - F_{\sigma}[j] > m/2$.
+        $$\widetilde{F}_{\sigma}[j] - F_{\sigma}[j] > \frac{m}{2}$$
+        $$(s+1) - 1 > \frac{s+r}{2}$$
+        $$2s > s+r$$
+        $$s > r$$
+        
+        So one possible answer to the question is the following stream $\sigma$ that with a probability $P>0.95$ that $\widetilde{F}_{\sigma}[j] - F_{\sigma}[j] > m/2$ for some item $j \in \sigma$: $30$ items with the same value, followed by $29$ items with unique values.
+        
+        
+        %In the initialization phase $k = 10$ and $t=1$ which means there are 10 groups and there is only trial. A even $m$ has to be picked with property that after $m/2-1$ items the probability that one group is empty is 0.05. This done calculated by the following distribution formula: $1 - \binom{10}{1}(\frac{9}{10})^n + \binom{10}{2}(\frac{8}{10})^n - \binom{10}{3}(\frac{7}{10})^n + \binom{10}{4}(\frac{6}{10})^n - \binom{10}{5}(\frac{5}{10})^n + \binom{10}{6}(\frac{4}{10})^n - \binom{10}{7}(\frac{3}{10})^n + \binom{10}{8}(\frac{2}{10})^n - \binom{10}{9}(\frac{1}{10})^n > 0.95$. From this formula $n > 50.2$ satisfies the probability of 0.05 that one group is empty therefore we can determine $m= 102$.
+        
+        %Stream $\sigma$ with size $m=102$ has been split into 2 separate streams $\sigma_a$ and $\sigma_b$. The stream $\sigma_a$ has size $m/2 - 1$  and only contains distinct items. Stream $\sigma_b$ has size $m/2 +1$ and only contains identical items which aren't in $\sigma_a$.
+        
+        %When $\sigma_a$ has been processed by the CountMin sketch then the probability that all groups have an item is $> 0.95$. Since $\sigma_b$ only contains identical values all the items go to the same group. Then there is a j $\in \sigma_a$ in a group which also contains $m/2+1$ elements from $\sigma_b$. Therefore there is a j in our stream $\sigma$ with $\widetilde{F}_{\sigma}[j] - F_{\sigma}[j] > m/2$ with a probability of at least 0.95
+        
+    \end{rlist}
+    
+\end{document}
+
